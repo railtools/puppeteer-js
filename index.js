@@ -8,7 +8,11 @@ const PORT = process.env.PORT || 3000;
 const LOGIN_URL = "https://hartsaccounting.3cx.co.nz:5001";
 const EMAIL = "trentpinet@gmail.com"; // <--- change this
 const PASSWORD = "William97!!2";  // <--- change this
+
 //updated credentials
+const email = process.env.C3CX_EMAIL;
+const password = process.env.C3CX_PASSWORD;
+
 
 app.get("/callcontrol", async (req, res) => {
   try {
@@ -21,8 +25,8 @@ app.get("/callcontrol", async (req, res) => {
     await page.goto(LOGIN_URL, { waitUntil: "networkidle2" });
 
     // STEP 1: Fill login form
-    await page.type('input[name="email"]', EMAIL);
-    await page.type('input[name="password"]', PASSWORD);
+    await page.type('input[name="email"]', email);
+    await page.type('input[name="password"]', password);
     await Promise.all([
       page.click('button[type="submit"]'),
       page.waitForNavigation({ waitUntil: "networkidle2" }),
