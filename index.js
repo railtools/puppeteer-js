@@ -6,8 +6,9 @@ const PORT = process.env.PORT || 3000;
 
 // Update these with your real login
 const LOGIN_URL = "https://hartsaccounting.3cx.co.nz:5001";
-const EMAIL = "placeholder@domain.com"; // <--- change this
-const PASSWORD = "changeme123";  // <--- change this
+const EMAIL = "trentpinet@gmail.com"; // <--- change this
+const PASSWORD = "William97!!2";  // <--- change this
+//updated credentials
 
 app.get("/callcontrol", async (req, res) => {
   try {
