@@ -1,24 +1,13 @@
 {
-  "name": "harts-3cx-status-service",
+  "name": "3cx-status-scraper",
   "version": "1.0.0",
-  "description": "Real-time 3CX extension status checker for Harts Chartered Accountants",
+  "description": "Simple Express + Puppeteer app for 3CX status check",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer": "^21.3.6",
-    "cors": "^2.8.5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nexaiinz-ai/puppeteer-js.git"
-  },
-  "author": "Harts Chartered Accountants",
-  "license": "MIT"
+    "puppeteer": "^21.3.8"
+  }
 }
