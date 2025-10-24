@@ -1,72 +1,56 @@
-const puppeteer = require('puppeteer');
+const express = require("express");
+const puppeteer = require("puppeteer");
 
-async function scrapeWebsite() {
-    let browser;
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    try {
-        console.log('Starting browser...');
+// Update these with your real login
+const LOGIN_URL = "https://hartsaccounting.3cx.co.nz:5001";
+const EMAIL = "trentpinet@gmail.com"; // <--- change this
+const PASSWORD = "William97!!2";  // <--- change this
 
-        // Launch browser
-        browser = await puppeteer.launch({
-            headless: true,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage'
-            ]
-        });
+//updated credentials
+const email = process.env.C3CX_EMAIL;
+const password = process.env.C3CX_PASSWORD;
 
-        // Create new page
-        const page = await browser.newPage();
 
-        // Set viewport size
-        await page.setViewport({ width: 1280, height: 720 });
+app.get("/callcontrol", async (req, res) => {
+  try {
+    const browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
 
-        // Navigate to website
-        console.log('Navigating to website...');
-        await page.goto('https://railway.com', {
-            waitUntil: 'networkidle2'
-        });
+    const page = await browser.newPage();
+    await page.goto(LOGIN_URL, { waitUntil: "networkidle2" });
 
-        // Get page title
-        const title = await page.title();
-        console.log('Page title:', title);
+    // STEP 1: Fill login form
+    await page.type('input[name="email"]', email);
+    await page.type('input[name="password"]', password);
+    await Promise.all([
+      page.click('button[type="submit"]'),
+      page.waitForNavigation({ waitUntil: "networkidle2" }),
+    ]);
 
-        // Get text content from h1
-        const heading = await page.$eval('h1', el => el.textContent);
-        console.log('Main heading:', heading);
+    // STEP 2: Navigate to Extension Status page
+    await page.goto(`${LOGIN_URL}/#/extensions`, { waitUntil: "networkidle2" });
 
-        // TODO: Add your scraping logic here
-        // Examples:
+    // STEP 3: Wait for extension table to load
+    await page.waitForSelector(".status-name");
 
-        // Get all links
-        // const links = await page.$$eval('a', links =>
-        //   links.map(link => ({
-        //     text: link.textContent,
-        //     href: link.href
-        //   }))
-        // );
+    // STEP 4: Scrape available statuses
+    const statuses = await page.evaluate(() => {
+      const rows = Array.from(document.querySelectorAll(".status-name"));
+      return rows.map(row => row.innerText.trim());
+    });
 
-        // Fill out a form
-        // await page.type('#search-input', 'your search term');
-        // await page.click('#search-button');
-        // await page.waitForNavigation();
+    await browser.close();
+    return res.json({ statuses });
+  } catch (err) {
+    return res.status(500).json({ error: err.toString() });
+  }
+});
 
-        // Wait for specific element
-        // await page.waitForSelector('.results', { timeout: 5000 });
-
-        console.log('Scraping completed successfully!');
-
-    } catch (error) {
-        console.error('Error occurred:', error);
-    } finally {
-        // Always close the browser
-        if (browser) {
-            await browser.close();
-            console.log('Browser closed');
-        }
-    }
-}
-
-// Run the scraping function
-scrapeWebsite();
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
